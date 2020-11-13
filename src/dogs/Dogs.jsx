@@ -6,6 +6,7 @@ function Dogs() {
   const [dog, setDog] = useState({});
   const [dogBreads, setDogBreads] = useState([]);
   const [selectedBread, setSelectedBread] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     getDogBreads()
@@ -16,11 +17,19 @@ function Dogs() {
           setSelectedBread(defaultDog); // show first one- this can change
           getRandomDogForBread(defaultDog)
             .then((dog) => setDog(dog))
-            .catch((err) => console.log("Unable to get detail", err));
+            .catch((err) => {
+              const error = "Unable to get detail";
+              setErrorMessage(error);
+              console.log(error, err);
+            });
         }
         console.log("Dog breads", breads);
       })
-      .catch((err) => console.log("Unable to fetch dog breads.", err));
+      .catch((err) => {
+        const error = "Unable to fetch dog breads";
+        setErrorMessage(error);
+        console.log(error, err);
+      });
   }, []);
 
   const getRandomDog = () => {
@@ -28,12 +37,11 @@ function Dogs() {
       .then((data) => {
         setDog(data);
       })
-      .catch((err) =>
-        console.log(
-          `Unable to fetch random details for ${selectedBread} bread.`,
-          err
-        )
-      );
+      .catch((err) => {
+        const error = `Unable to fetch random details for ${selectedBread} bread.`;
+        setErrorMessage(error);
+        console.log(error, err);
+      });
   };
 
   const onDogBreadChange = (e) => {
@@ -42,8 +50,22 @@ function Dogs() {
     getRandomDog();
   };
 
+  const clearError = () => setErrorMessage(null);
+
   return (
-    <div style={{marginTop:'20px'}}>
+    <div style={{ marginTop: "20px" }}>
+      <div className="form-row">
+        {errorMessage && (
+          <>
+            <div class="alert alert-danger" role="alert">
+              {!!errorMessage}
+            </div>
+            <button className="btn btn-danger" onClick={clearError}>
+              X
+            </button>
+          </>
+        )}
+      </div>
       <div className="form-row">
         <label className="col-form-label col-sm-2" htmlFor="dogsbread">
           Dogs Bread
